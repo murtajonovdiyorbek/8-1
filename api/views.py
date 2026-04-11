@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from .models import Category, Car
 from rest_framework.exceptions import NotFound
 
-
+from .serializers import CategorySerializer, CarSerializer
 
 class CategoryView(APIView):
-    def get(self, request: Request, pk=None):
+    def get_c(self, request: Request, pk=None):
         if pk:
             category = Category.objects.filter(pk=pk).values().first()
 
@@ -20,48 +20,50 @@ class CategoryView(APIView):
         category = Category.objects.values()
         return Response(category)
 
+    def get(self, request: Request, pk=None):
+        if pk:
+            category = self.get_category(pk)
 
-    def post(self, request: Request):
-        body = request.data
+            serializer = CategorySerializer(category)
 
-        Category.objects.create(**body)
+            return Response(serializer.data)
+
+        category = Category.objects.all()
+
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data)
+
+
+    def post(self,request:Request):
+        serializer = CategorySerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({
-            "message": "Ma'lumotlar saqlandi"
+            'message':"Malumotlar topildi"
         })
 
+    def put(self,request:Request,pk):
+        category = self.get_category(pk)
 
-    def put(self, request: Request, pk):
-        category = Category.objects.filter(pk=pk).first()
-
-        if not category:
-            raise NotFound(detail="category topilmadi")
-
-
-        body = request.data
-        category.name = body.get('name', category.name)
-        category.description = body.get('description', category.description)
-        category.save()
+        serializer = CategorySerializer(instance=category,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({
-            "message": "Malumotlar yangilandi"
+            'message':"Malumotlar yangilandi"
         })
 
+    def patch(self,request:Request,pk):
+        category = self.get_category(pk)
 
-    def patch(self, request, pk):
-        category = Category.objects.filter(pk=pk).first()
-
-        if not category:
-            raise NotFound(detail="category topilmadi")
-
-        body = request.data
-        category.name = body.get('name', category.name)
-        category.description = body.get('description', category.description)
-
-        category.save()
+        serializer = CategorySerializer(instance=category,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({
-            "message": "Malumotlar yangilandi"
+            'message'"Ma'lumotlar yangilandi"
         })
 
 
@@ -80,9 +82,8 @@ class CategoryView(APIView):
 
 
 
-
 class CarView(APIView):
-    def get(self, request: Request, pk=None):
+    def get_c(self, request: Request, pk=None):
         if pk:
             car = Car.objects.filter(pk=pk).values().first()
 
@@ -96,58 +97,49 @@ class CarView(APIView):
         return Response(car)
 
 
-    def post(self, request: Request):
-        body = request.data
+    def get(self,request:Request,pk=None):
+        if pk:
+            car = self.get_car(pk)
 
-        Car.objects.create(**body)
+            serializer = CarSerializer(car)
+
+            return Response(serializer.data)
+
+        cars = Car.objects.all()
+
+        serializer = CarSerializer(cars,many=True)
+        return Response(serializer.data)
+
+    def post(self,request:Request):
+        serializer = CarSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({
-            "message": "Ma'lumotlar saqlandi"
+            'message':"Malumotlar topildi"
         })
 
+    def put(self,request:Request,pk):
+        car = self.get_car(pk)
 
-    def put(self, request: Request, pk):
-        car = Car.objects.filter(pk=pk).first()
-
-        if not car:
-            raise NotFound(detail="Car topilmadi")
-
-
-        body = request.data
-        car.brand = body.get('brand', car.brand)
-        car.model = body.get('model', car.model)
-        car.year = body.get('year', car.year)
-        car.color = body.get('color', car.color)
-        car.price = body.get('price', car.price)
-        car.mileage = body.get('mileage', car.mileage)
-        car.description = body.get('description', car.description)
-        car.image = body.get('image', car.image)
-        car.save()
+        serializer = CarSerializer(instance=car,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({
-            "message": "Malumotlar yangilandi"
+            'message':"Malumotlar yangilandi"
         })
 
+    def patch(self,request:Request,pk):
+        car = self.get_car(pk)
 
-    def patch(self, request, pk):
-        car = Car.objects.filter(pk=pk).first()
-
-        if not car:
-            raise NotFound(detail="Car topilmadi")
-
-        body = request.data
-        car.brand = body.get('brand', car.brand)
-        car.model = body.get('model', car.model)
-        car.year = body.get('year', car.year)
-        car.color = body.get('color', car.color)
-        car.price = body.get('price', car.price)
-        car.mileage = body.get('mileage', car.mileage)
-        car.description = body.get('description', car.description)
-        car.image = body.get('image', car.image)
-        car.save()
+        serializer = CarSerializer(instance=car,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         return Response({
-            "message": "Malumotlar yangilandi"
+            'message'"Ma'lumotlar yangilandi"
         })
 
 
