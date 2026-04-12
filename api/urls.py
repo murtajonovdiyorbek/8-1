@@ -1,10 +1,7 @@
 from django.urls import path
-from .views import *
+from .views import  CarListCreateView, CarDetailUpdateDeleteAPIView
 
 urlpatterns = [
-    path('category/', CategoryView.as_view(), name='category_list'),
-    path('category/<int:pk>/', CategoryView.as_view(), name='category_detail'),
-
-    path('car/', CarView.as_view(), name='car_list'),
-    path('car/<int:pk>/', CarView.as_view(), name='car_detail'),
-]
+    path('cars/', CarListCreateView.as_view(), name='students'),
+    path('cars/<int:pk>/', CarDetailUpdateDeleteAPIView.as_view(), name="update"),
+    ]
